@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,22 +11,22 @@ import (
 )
 
 type xkcdJson struct {
-Month int      `json:"month"`
+Month string `json:"month"`
 Link string    `json:"link"`
-Year int       `json:"year"`
+Year string `json:"year"`
 News string    `json:"news"`
 SafeTitle string `json:"safe_title"`
 Transcript string `json:"transcript"`
 Alt string      `json:"alt"`
 Img string      `json:"img"`
 Title string    `json:"title"`
-Day int         `json:"day"`
+Day string `json:"day"`
 }
 
 // getXkcd returns the link to the xkcd comic with the given number. latest is also acceptable. none will give random
 func GetXkcd(s string) (string, error) {
 
-	var xkcd map[string]interface{}
+	var xkcd xkcdJson
 	var resp *http.Response
 	var err error
 	
@@ -64,10 +63,7 @@ func GetXkcd(s string) (string, error) {
 		return "", err
 	}
 
-	img, ok := xkcd["img"].(string)
-	if !ok {
-		return "", errors.New("image URL not found")
-	}
+	img := xkcd.Img
 
 	return img, nil
 }
