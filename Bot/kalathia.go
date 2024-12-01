@@ -3,8 +3,10 @@ package kalathia
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -41,14 +43,21 @@ func newMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
+	content := strings.ToLower(m.Content)
 
-	if m.Content == "!ping" {
-		s.ChannelMessageSend(m.ChannelID, "PONG!")
+	if strings.Contains(content, "cat") {
+		resp, err := http.Get("https://cataas.com/cat")
+		checkNilErr(err)
+		_, err = s.ChannelFileSend(m.ChannelID, "kitteh.png", resp.Body)
+		checkNilErr(err)
+		s.ChannelMessageSend(m.ChannelID, "Meow! :3")
+		return
 	}
+
 	switch m.Content {
 		case "ping": {
-			s.ChannelMessageSend(m.ChannelID, "PONG!")
-		}
+			s.ChannelMessageSend(m.ChannelID, "Pong! :)")
+		} 
 	}
 }
 
