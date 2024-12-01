@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"strings"
 
+	"codaea.com/kalathia/Bot/utils"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -52,6 +53,24 @@ func newMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		checkNilErr(err)
 		s.ChannelMessageSend(m.ChannelID, "Meow! :3")
 		return
+	}
+
+	if strings.Contains(content, "dog") {
+		s.ChannelMessageSend(m.ChannelID, "Nice try. i'm a cat person")
+		return
+	}
+
+	if strings.Contains(content, "isdown") {
+		content = strings.Replace(content, "isdown", "", -1)
+		content = strings.TrimSpace(content)
+
+		statusCode, err := utils.Ping(content)
+		checkNilErr(err)
+
+		req, err := http.Get("https://http.cat/" + fmt.Sprint(statusCode) + ".jpg")
+		checkNilErr(err)
+
+		s.ChannelFileSend(m.ChannelID, "resp.jpg", req.Body)
 	}
 
 	switch m.Content {
