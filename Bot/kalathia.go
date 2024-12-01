@@ -16,7 +16,9 @@ var BotToken string
 
 func checkNilErr(e error) {
 	if e != nil {
+		fmt.Println(e)
 		log.Fatal("Error message")
+
 	}
 }
 
@@ -71,6 +73,19 @@ func newMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		checkNilErr(err)
 
 		s.ChannelFileSend(m.ChannelID, "resp.jpg", req.Body)
+	}
+
+	if strings.Contains(content, "xkcd") {
+		content = strings.Replace(content, "xkcd", "", -1)
+		content = strings.TrimSpace(content)
+
+		img, err := utils.GetXkcd(content)
+		checkNilErr(err)
+		resp, err := http.Get(img)
+		checkNilErr(err)
+
+		s.ChannelFileSend(m.ChannelID, "xkcd.jpg", resp.Body)
+		return
 	}
 
 	switch m.Content {
